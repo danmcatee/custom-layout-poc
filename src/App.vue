@@ -1,106 +1,118 @@
 <template>
   <div id="app">
-    <div class="toolsRow">
-      <div
-        class="tool"
-        v-for="(tool, i) in tools"
-        :key="tool.type"
-        :class="[selectedTool === i ? 'tool-selected' : null]"
-        @click="selectedTool = i"
+    <grid-layout
+      class="grid"
+      :layout="layout"
+      :col-num="16"
+      :max-rows="9"
+      :row-height="100"
+      :is-draggable="true"
+      :is-resizable="true"
+      :is-mirrored="false"
+      :vertical-compact="true"
+      :margin="[10, 10]"
+      :use-css-transforms="true"
+    >
+      <grid-item
+        class="item"
+        v-for="item in layout"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        :key="item.i"
       >
-        {{ tool.type }}
-      </div>
-      <div class="tool" @click="selectedTool = null">x</div>
-    </div>
-    <div class="gridContainer">
-      <div class="baseGrid toolGrid">
-        <Chat
-          v-if="tools[0].visible"
-          :style="{
-            gridArea: `${tools[0].position.top}/${tools[0].position.left}/${tools[0].position.bottom}/${tools[0].position.right}`
-          }"
-        />
-        <Poll v-if="tools[1].visible" />
-      </div>
-      <div class="baseGrid gridOverlay" v-if="overlayVisible">
-        <div class="overlayItem" v-for="i in 144" :key="i"></div>
-      </div>
-    </div>
+        {{ item.i }}
+      </grid-item>
+    </grid-layout>
   </div>
 </template>
 
 <script>
-import Chat from "@/components/Chat.vue";
-import Poll from "@/components/Poll.vue";
+import VueGridLayout from "vue-grid-layout";
+// import Chat from "@/components/Chat.vue";
+// import Poll from "@/components/Poll.vue";
 
 export default {
   name: "App",
   components: {
-    Chat,
-    Poll
+    GridLayout: VueGridLayout.GridLayout,
+    GridItem: VueGridLayout.GridItem
+    // Chat,
+    // Poll
   },
   data: () => ({
-    tools: [
-      {
-        type: "chat",
-        visible: true,
-        position: { top: 2, left: 1, bottom: 4, right: 1 }
-      },
-      {
-        type: "poll",
-        visible: true,
-        position: { top: 0, left: 0, bottom: 0, right: 0 }
-      }
+    layout: [
+      { x: 0, y: 0, w: 16, h: 1, i: "Chat" },
+      { x: 0, y: 1, w: 16, h: 1, i: "Poll" },
+      { x: 0, y: 1, w: 16, h: 1, i: "Tool" }
+      // { x: 2, y: 0, w: 2, h: 4, i: "1" },
+      // { x: 4, y: 0, w: 2, h: 5, i: "2" },
+      // { x: 6, y: 0, w: 2, h: 3, i: "3" },
+      // { x: 8, y: 0, w: 2, h: 3, i: "4" },
+      // { x: 10, y: 0, w: 2, h: 3, i: "5" },
+      // { x: 0, y: 5, w: 2, h: 5, i: "6" },
+      // { x: 2, y: 5, w: 2, h: 5, i: "7" },
+      // { x: 4, y: 5, w: 2, h: 5, i: "8" },
+      // { x: 6, y: 3, w: 2, h: 4, i: "9" },
+      // { x: 8, y: 4, w: 2, h: 4, i: "10" },
+      // { x: 10, y: 4, w: 2, h: 4, i: "11" },
+      // { x: 0, y: 10, w: 2, h: 5, i: "12" },
+      // { x: 2, y: 10, w: 2, h: 5, i: "13" },
+      // { x: 4, y: 8, w: 2, h: 4, i: "14" },
+      // { x: 6, y: 8, w: 2, h: 4, i: "15" },
+      // { x: 8, y: 10, w: 2, h: 5, i: "16" },
+      // { x: 10, y: 4, w: 2, h: 2, i: "17" },
+      // { x: 0, y: 9, w: 2, h: 3, i: "18" },
+      // { x: 2, y: 6, w: 2, h: 2, i: "19" }
     ],
-    selectedTool: null
-    // overlayVisible: true
+    draggable: true,
+    resizable: true,
+    index: 0
   }),
-  computed: {
-    overlayVisible: function() {
-      return this.selectedTool !== null ? true : false;
+  methods: {
+    itemTitle(item) {
+      var result = item.i;
+      if (item.static) {
+        result += " - Static";
+      }
+      return result;
     }
-  }
+    /*
+        increaseWidth: function(item) {
+            var width = document.getElementById("content").offsetWidth;
+            width += 20;
+            document.getElementById("content").style.width = width+"px";
+        },
+        decreaseWidth: function(item) {
+            var width = document.getElementById("content").offsetWidth;
+            width -= 20;
+            document.getElementById("content").style.width = width+"px";
+        },
+        removeItem: function(item) {
+            //console.log("### REMOVE " + item.i);
+            this.layout.splice(this.layout.indexOf(item), 1);
+        },
+        addItem: function() {
+            var self = this;
+            //console.log("### LENGTH: " + this.layout.length);
+            var item = {"x":0,"y":0,"w":2,"h":2,"i":this.index+"", whatever: "bbb"};
+            this.index++;
+            this.layout.push(item);
+        }
+*/
+  },
+  computed: {}
 };
 </script>
 
 <style>
-.toolsRow {
-  display: flex;
-  margin-bottom: 2rem;
-}
-.tool {
-  border: 1px solid black;
-  padding: 2rem;
-  margin-right: 1rem;
-}
-
-.tool-selected {
-  border: 1px solid lime;
-}
-
-.gridContainer {
-  position: relative;
-}
-
-.baseGrid {
-  display: grid;
-  grid-template-columns: repeat(16, 1fr);
-  grid-template-rows: repeat(9, 1fr);
-  height: 600px;
-  gap: 1rem;
-}
-
-.toolGrid {
-}
-
-.gridOverlay {
-  position: absolute;
+.grid {
   width: 100%;
-  top: 0;
-  left: 0;
 }
 
-.overlayItem {
-  border: 1px solid black;
+.item {
+  background-color: lightgrey;
 }
 </style>
